@@ -1,0 +1,31 @@
+﻿@model svg.ViewModels.SvgObjectsListView
+@{
+    ViewBag.Title = "Svg-Objects";
+}
+
+@using (Html.BeginForm("Index", "Library", FormMethod.Get))
+{
+    <div class="row margin-top-25">
+        <div class="col-md-11">
+            <input type="text" class="form-control" />
+        </div>
+        <div class="col-md-1">
+            <button class="btn btn-primary btn-block">Search</button>
+        </div>
+    </div>
+}
+
+<div class="row margin-top-25">
+    <div class="col-md-1 col-md-offset-11">
+        <a href="@Url.Action("Add")" class="btn btn-primary btn-block">Add</a>
+    </div>
+</div>
+<hr />
+@foreach (var obj in Model.Objects)
+{
+    <div class="row">
+        <div class="col-md-3">
+            @Html.Partial("_ObjectThumbnail", obj)
+        </div>
+    </div>
+}

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using svg.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -12,7 +13,17 @@ namespace svg.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            var objects = _manager.GetSvgObjects();
+            var model = new SvgObjectsListView()
+            {
+                Objects = objects.Select(o => new SvgObjectVew()
+                {
+                    Id = o.Id,
+                    Name = o.Name
+                })
+            };
+
+            return View(model);
         }
 
         public ActionResult Add()
@@ -31,6 +42,11 @@ namespace svg.Controllers
         }
 
         public ActionResult Thumbnail()
+        {
+            return View();
+        }
+
+        public ActionResult FullImage()
         {
             return View();
         }

@@ -1,4 +1,5 @@
 ﻿using svg.Contexts;
+using svg.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,10 @@ namespace svg
             _db = new SvgDbContext();
         }
 
-
+        public IEnumerable<SvgObject> GetSvgObjects()
+        {
+            return _db.SvgObjects.AsEnumerable();
+        }
 
 
         public void SaveChanges()
