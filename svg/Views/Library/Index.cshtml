@@ -21,11 +21,14 @@
     </div>
 </div>
 <hr />
-@foreach (var obj in Model.Objects)
-{
-    <div class="row">
+<div class="row">
+    @foreach (var obj in Model.Objects)
+    {
+
         <div class="col-md-3">
             @Html.Partial("_ObjectThumbnail", obj)
         </div>
-    </div>
-}
+
+    }
+</div>
+

@@ -16,4 +16,12 @@ namespace svg.Contexts
         public DbSet<Tree> Trees { get; set; }
         public DbSet<TreeElement> TreeElements { get; set; }
     }
+
+    public class SvgDbInitializer : DropCreateDatabaseIfModelChanges<SvgDbContext>
+    {
+        protected override void Seed(SvgDbContext context)
+        {
+
+        }
+    }
 }

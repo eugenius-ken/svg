@@ -7,6 +7,6 @@ namespace svg.ViewModels
 {
     public class SvgObjectsListView
     {
-        public IEnumerable<SvgObjectVew> Objects { get; set; } = new List<SvgObjectVew>();
+        public IEnumerable<SvgObjectView> Objects { get; set; } = new List<SvgObjectView>();
     }
 }

@@ -5,7 +5,7 @@ using System.Web;
 
 namespace svg.ViewModels
 {
-    public class SvgObjectVew
+    public class SvgObjectView
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
