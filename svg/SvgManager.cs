@@ -27,6 +27,22 @@ namespace svg
             _db.SvgObjects.Add(obj);
             _db.SaveChanges();
         }
+
+        public bool DeleteSvgObject(Guid id)
+        {
+            var obj = _db.SvgObjects.Find(id);
+            if (obj != null)
+            {
+                _db.SvgObjects.Remove(obj);
+                _db.SaveChanges();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         #endregion
 
         #region Thumbnail
@@ -40,6 +56,15 @@ namespace svg
         public Thumbnail GetThumbnailById(Guid id)
         {
             return _db.Thumbnails.Find(id);
+        }
+
+        #endregion
+
+        #region Trees
+
+        public IEnumerable<Tree> GetTrees()
+        {
+            return _db.Trees.AsEnumerable();
         }
 
         #endregion

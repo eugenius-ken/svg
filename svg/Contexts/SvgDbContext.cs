@@ -15,6 +15,14 @@ namespace svg.Contexts
         public DbSet<Thumbnail> Thumbnails { get; set; }
         public DbSet<Tree> Trees { get; set; }
         public DbSet<TreeElement> TreeElements { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Thumbnail>()
+                .HasRequired(obj => obj.SvgObject)
+                .WithRequiredDependent()
+                .WillCascadeOnDelete(true);
+        }
     }
 
     public class SvgDbInitializer : DropCreateDatabaseIfModelChanges<SvgDbContext>

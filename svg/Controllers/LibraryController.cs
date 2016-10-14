@@ -91,9 +91,11 @@ namespace svg.Controllers
             return View();
         }
 
-        public ActionResult Delete()
+        [HttpPost]
+        public ActionResult Delete(Guid id)
         {
-            return View();
+            var deleted = _manager.DeleteSvgObject(id);
+            return deleted ? Content(id.ToString()) : Content(String.Empty);
         }
 
         public ActionResult Thumbnail(Guid id)

@@ -15,6 +15,6 @@ namespace svg.Models
 
         public string Value { get; set; }
 
-        public virtual Thumbnail ThumbNail { get; set; }
+        public virtual Thumbnail Thumbnail { get; set; }
     }
 }

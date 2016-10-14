@@ -6,7 +6,13 @@
         <h3 style="text-align:center;">@Model.Name</h3>
         <p style="text-align:center;">
             <a class="btn btn-default" href="@Url.Action("FullImage", new { id = Model.Id })" target="_blank">Full Screen</a>
-            <a class="btn btn-default" href="@Url.Action("Delete", new { id = Model.Id })">Delete</a>
+            @*<a class="btn btn-default" href="@Url.Action("Delete", new { id = Model.Id })">Delete</a>*@
+            @Ajax.ActionLink("Delete", "Delete", new { id = Model.Id }, new AjaxOptions()
+       {
+           HttpMethod = "POST",
+           OnComplete = "onDeleteCompleted"
+       },
+           new { @class = "btn btn-default" })
         </p>
     </div>
 </div>

@@ -12,6 +12,8 @@ namespace svg.Controllers
 
         public ActionResult Index()
         {
+            var trees = _manager.GetTrees();
+
             return View();
         }
 

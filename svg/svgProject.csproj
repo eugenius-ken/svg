@@ -194,6 +194,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\SvgObjectsListView.cs" />
     <Compile Include="ViewModels\SvgObjectVew.cs" />
+    <Compile Include="ViewModels\TreeView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-fileinput\css\fileinput.css" />
@@ -229,6 +230,8 @@
     <Content Include="Scripts\jquery-3.1.1.slim.js" />
     <Content Include="Scripts\jquery-3.1.1.slim.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />

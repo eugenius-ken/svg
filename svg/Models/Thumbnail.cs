@@ -9,7 +9,6 @@ namespace svg.Models
 {
     public class Thumbnail
     {
-        [Key, ForeignKey("SvgObject")]
         public Guid Id { get; set; }
 
         public byte[] Content { get; set; }

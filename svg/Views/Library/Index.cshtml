@@ -25,10 +25,29 @@
     @foreach (var obj in Model.Objects)
     {
 
-        <div class="col-md-3">
+        <div class="col-md-3" id="@obj.Id">
             @Html.Partial("_ObjectThumbnail", obj)
         </div>
 
     }
 </div>
 
+@section unobtrusive
+{
+    @Scripts.Render("~/bundles/unobtrusive")
+}
+
+@section Scripts
+{
+    <script>
+        
+        function onDeleteCompleted(response) {
+            if (response.responseText == '')
+                alert('Delete error');
+            else {
+                $('#' + response.responseText).fadeOut('slow');
+            }
+        }
+
+    </script>
+}
