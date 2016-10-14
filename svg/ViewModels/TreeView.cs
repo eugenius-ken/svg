@@ -10,5 +10,6 @@ namespace svgProject.ViewModels
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string XmlText { get; set; }
+        public Guid ThumbnailId { get; set; }
     }
 }

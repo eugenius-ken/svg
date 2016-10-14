@@ -11,6 +11,7 @@ using System.Xml;
 using System.Drawing.Imaging;
 using System.Drawing;
 using svgProject.ViewModels;
+using System.Text;
 
 namespace svg.Controllers
 {

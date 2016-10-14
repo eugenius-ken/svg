@@ -16,5 +16,7 @@ namespace svg.Models
         public string Value { get; set; }
 
         public virtual ICollection<TreeElement> Children { get; set; }
+
+        public Guid ThumbnailId { get; set; } //need for disaplying thumbnail on tree list page
     }
 }

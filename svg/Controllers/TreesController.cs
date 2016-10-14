@@ -1,4 +1,5 @@
-﻿using System;
+﻿using svgProject.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,8 +14,16 @@ namespace svg.Controllers
         public ActionResult Index()
         {
             var trees = _manager.GetTrees();
-
-            return View();
+            var model = new TreesListView()
+            {
+                Trees = trees.Select(t => new TreeView()
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    ThumbnailId = t.ThumbnailId
+                })
+            };
+            return View(model);
         }
 
         public ActionResult Add()

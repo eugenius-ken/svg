@@ -1,0 +1,52 @@
+﻿@model svgProject.ViewModels.TreesListView
+@{
+}
+
+@using (Html.BeginForm("Index", "Library", FormMethod.Get))
+{
+    <div class="row margin-top-25">
+        <div class="col-md-11">
+            <input type="text" class="form-control" />
+        </div>
+        <div class="col-md-1">
+            <button class="btn btn-primary btn-block">Search</button>
+        </div>
+    </div>
+}
+
+<div class="row margin-top-25">
+    <div class="col-md-1 col-md-offset-11">
+        <a href="@Url.Action("Add")" class="btn btn-primary btn-block">Add</a>
+    </div>
+</div>
+<hr />
+<div class="row">
+    @foreach (var obj in Model.Trees)
+    {
+
+        <div class="col-md-3" id="@obj.Id">
+            @Html.Partial("_TreeThumbnail", obj)
+        </div>
+
+    }
+</div>
+
+@section unobtrusive
+{
+    @Scripts.Render("~/bundles/unobtrusive")
+}
+
+@section Scripts
+{
+    <script>
+
+        function onDeleteCompleted(response) {
+            if (response.responseText == '')
+                alert('Delete error');
+            else {
+                $('#' + response.responseText).fadeOut('slow');
+            }
+        }
+
+    </script>
+}

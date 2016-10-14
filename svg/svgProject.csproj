@@ -195,6 +195,7 @@
     <Compile Include="ViewModels\SvgObjectFullView.cs" />
     <Compile Include="ViewModels\SvgObjectsListView.cs" />
     <Compile Include="ViewModels\SvgObjectView.cs" />
+    <Compile Include="ViewModels\TreesListView.cs" />
     <Compile Include="ViewModels\TreeView.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -316,10 +317,11 @@
     <Content Include="Views\Library\_ObjectThumbnail.cshtml" />
     <Content Include="Views\Library\Add.cshtml" />
     <Content Include="Views\Library\FullImage.cshtml" />
+    <Content Include="Views\Trees\Index.cshtml" />
+    <Content Include="Views\Trees\_TreeThumbnail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Trees\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
