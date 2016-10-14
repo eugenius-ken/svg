@@ -28,6 +28,11 @@ namespace svg
             _db.SaveChanges();
         }
 
+        public SvgObject GetSvgObjectById(Guid id)
+        {
+            return _db.SvgObjects.Find(id);
+        }
+
         public bool DeleteSvgObject(Guid id)
         {
             var obj = _db.SvgObjects.Find(id);

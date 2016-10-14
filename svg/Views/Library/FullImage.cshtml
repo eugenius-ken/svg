@@ -1,0 +1,8 @@
+﻿@model svgProject.ViewModels.SvgObjectFullView
+@{
+    Layout = null;
+    ViewBag.Title = Model.Name;
+}
+<img src="@Url.Action("GetSvgImage", new { id = Model.Id })" alt="@Model.Name" />
+    @*@Html.Raw(Model.XmlText)*@
+

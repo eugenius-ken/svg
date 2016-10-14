@@ -10,6 +10,7 @@ using Svg;
 using System.Xml;
 using System.Drawing.Imaging;
 using System.Drawing;
+using svgProject.ViewModels;
 
 namespace svg.Controllers
 {
@@ -107,9 +108,22 @@ namespace svg.Controllers
             return File(thumbnail.Content, "image/jpg");
         }
 
-        public ActionResult FullImage()
+        public ActionResult FullImage(Guid id)
         {
-            return View();
+            var obj = _manager.GetSvgObjectById(id);
+            if (obj == null)
+                return HttpNotFound();
+
+            return View(new SvgObjectFullView(obj.Id, obj.Name));
+        }
+
+        public ActionResult GetSvgImage(Guid id)
+        {
+            var obj = _manager.GetSvgObjectById(id);
+            if (obj == null)
+                return View();
+
+            return Content(obj.Value, "image/svg+xml");
         }
 
         protected override void Dispose(bool disposing)
