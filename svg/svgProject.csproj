@@ -167,6 +167,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AjaxModels\AjaxData.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
@@ -195,7 +196,9 @@
     <Compile Include="ViewModels\SvgObjectFullView.cs" />
     <Compile Include="ViewModels\SvgObjectsListView.cs" />
     <Compile Include="ViewModels\SvgObjectView.cs" />
+    <Compile Include="ViewModels\TreeEditView.cs" />
     <Compile Include="ViewModels\TreesListView.cs" />
+    <Compile Include="ViewModels\TreeThumbnailView.cs" />
     <Compile Include="ViewModels\TreeView.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -209,6 +212,7 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\no-image.png" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -319,6 +323,8 @@
     <Content Include="Views\Library\FullImage.cshtml" />
     <Content Include="Views\Trees\Index.cshtml" />
     <Content Include="Views\Trees\_TreeThumbnail.cshtml" />
+    <Content Include="Views\Trees\Add.cshtml" />
+    <Content Include="Views\Trees\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

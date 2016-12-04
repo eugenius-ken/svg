@@ -15,9 +15,11 @@ namespace svg.Models
         public virtual Tree Tree { get; set; }
         public Guid TreeId { get; set; }
 
-        [ForeignKey("Parent")]
-        public Guid ParentId { get; set; }
-        public virtual TreeElement Parent { get; set; }
+        public bool IsParent { get; set; }
+
+        //[ForeignKey("Parent")]
+        //public Guid ParentId { get; set; }
+        //public virtual TreeElement Parent { get; set; }
 
         public virtual ICollection<TreeElement> Children { get; set; }
     }

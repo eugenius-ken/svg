@@ -1,4 +1,4 @@
-﻿@model svgProject.ViewModels.TreeView
+﻿@model svgProject.ViewModels.TreeThumbnailView
 
 <div class="thumbnail">
     <img src="@Url.Action("Thumbnail", new { id = Model.Id })" alt="thumbnail" />
@@ -6,7 +6,7 @@
         <h3 style="text-align:center;">@Model.Name</h3>
         <p style="text-align:center;">
             <a class="btn btn-default" href="@Url.Action("Review", new { id = Model.Id })" target="_blank">Review</a>
-            <a class="btn btn-default" href="@Url.Action("Edit", new { id = Model.Id })"></a>
+            <a class="btn btn-default" href="@Url.Action("Edit", new { id = Model.Id })">Edit</a>
             @Ajax.ActionLink("Delete", "Delete", new { id = Model.Id }, new AjaxOptions()
        {
            HttpMethod = "POST",

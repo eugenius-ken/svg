@@ -72,6 +72,66 @@ namespace svg
             return _db.Trees.AsEnumerable();
         }
 
+        public Tree GetTreeById(Guid id)
+        {
+            return _db.Trees.Find(id);
+        }
+
+        public void AddTree(Tree obj)
+        {
+            _db.Trees.Add(obj);
+            _db.SaveChanges();
+        }
+
+        public bool DeleteTree(Guid id)
+        {
+            var obj = _db.Trees.Find(id);
+            if (obj != null)
+            {
+                _db.Trees.Remove(obj);
+                _db.SaveChanges();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Elements
+
+        public TreeElement GetParentElement(Guid treeId)
+        {
+            return _db.TreeElements.FirstOrDefault(e => e.TreeId == treeId && e.IsParent);
+        }
+
+        public void AddTreeElement(TreeElement element)
+        {
+            _db.TreeElements.Add(element);
+            _db.SaveChanges();
+        }
+
+        public TreeElement GetTreeElementById(Guid id)
+        {
+            return _db.TreeElements.FirstOrDefault(e => e.Id == id);
+        }
+
+        public void UpdateImageTextForElement(Guid id, string imageText)
+        {
+            var element = _db.TreeElements.FirstOrDefault(e => e.Id == id);
+            element.Value = imageText;
+            _db.SaveChanges();
+        }
+
+        public void DeleteTreeElement(Guid id)
+        {
+            var element = _db.TreeElements.FirstOrDefault(e => e.Id == id);
+            _db.TreeElements.Remove(element);
+            _db.SaveChanges();
+        }
+
         #endregion
 
         public void SaveChanges()

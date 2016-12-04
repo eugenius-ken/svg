@@ -1,0 +1,301 @@
+﻿@model svgProject.ViewModels.TreeEditView
+
+@{
+    ViewBag.Title = "Edit tree";
+}
+
+<div class="col-md-12">
+    <div class="col-md-4">
+        <h3>@Model.Name</h3>
+        <hr />
+        <input type="hidden" value="@Model.Id" id="tree_id" />
+        <input type="hidden" value="@Model.CurrentId" id="current_id" />
+        @if (Model.Value == String.Empty)
+        {
+            <div id="form_add">
+                <div class="form-group">
+                    @Html.Label("main_image", "Choose main image", new { @class = "control-label" })
+                    @Html.DropDownListFor(model => model.ObjectId, Model.SvgObjects.Select(o => new SelectListItem()
+               {
+                   Value = o.Id.ToString(),
+                   Text = o.Name
+               }), new { @class = "form-control", id = "parent_image" })
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" id="button_add">Choose</button>
+                </div>
+            </div>
+        }
+
+        <div id="form_select">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ObjectId, new { @class = "control-label" })
+                @Html.DropDownListFor(model => model.ObjectId, Model.SvgObjects.Select(o => new SelectListItem()
+           {
+               Value = o.Id.ToString(),
+               Text = o.Name
+           }), new { @class = "form-control", id = "image_to_redirect" })
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary" id="button_bind" disabled>Bind</button>
+                <button class="btn btn-primary" id="button_unbind" disabled>Unbind</button>
+                <button class="btn btn-default" id="button_prev" disabled><span class="glyphicon glyphicon-chevron-left"></span></button>
+                <button class="btn btn-default" id="button_next" disabled><span class="glyphicon glyphicon-chevron-right"></span></button>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-8" style="text-align:center;" id="image_text">
+        @Html.Raw(Model.Value)
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+
+        var $pressedElement;
+        var currentId = $('#current_id').val();
+        var historyRoute = [];
+        var elementName = '';
+
+        //отрисовываем картинку при выборе родительского элемента
+        $('#parent_image').change(getImageText);
+
+        function getImageText() {
+            $.ajax({
+                method: 'GET',
+                url: '@Url.Action("GetXMLTextForImage")' + '/' + $('#parent_image').val(),
+                success: function (response) {
+                    $('#button_add').removeAttr('disabled');
+
+                    $('#image_text').empty();
+                    $('#image_text').append(response);
+                },
+                error: function (error) {
+                    $('#button_add').attr('disabled', 'disabled');
+                    console.log(error);
+                    alert('Ошибка при попытке получить изображение');
+                }
+            });
+        }
+
+        //привязываем выбранную картинку к выбранному элементу
+        $('#button_bind').click(function () {
+            $pressedElement.css('opacity', 1);
+            var data = { imageId: $('#image_to_redirect').val(), treeId: $('#tree_id').val() };
+            setLoadingForButton($('#button_bind'));
+            $.ajax({
+                method: 'POST',
+                url: '@Url.Action("SaveChildImage")',
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    $pressedElement.attr('data-child-id', response);
+
+                    $.ajax({
+                        method: 'POST',
+                        url: '@Url.Action("ChangeCurrentImage")',
+                        data: JSON.stringify({ imageId: currentId, imageText: $('#image_text').html() }),
+                        contentType: "application/json; charset=utf-8",
+                        success: function (response) {
+                            console.log(response);
+                            setSuccessForButton($('#button_bind'));
+                            $('#button_next').removeAttr('disabled');
+                            $('#button_bind').attr('disabled', 'disabled');
+                            $('#button_unbind').removeAttr('disabled');
+                            $pressedElement.css('opacity', 0.5);
+                        },
+                        error: function (error) {
+                            console.error(error);
+                        }
+                    });
+
+                },
+                error: function (error) {
+                    console.error(error);
+                }
+            });
+        });
+
+        //отвязываем
+        $('#button_unbind').click(function () {
+            setLoadingForButton($('#button_unbind'));
+            $.ajax({
+                method: 'GET',
+                url: '@Url.Action("UnbindImage")/?imageId=' + $pressedElement.attr('data-child-id'),
+                success: function (response) {
+                    $('#button_unbind').attr('disabled', 'disabled');
+                    $('#button_bind').removeAttr('disabled');
+                    $('#button_next').attr('disabled', 'disabled');
+                    setSuccessForButton($('#button_unbind'));
+                    $pressedElement.removeAttr('data-child-id');
+                },
+                error: function (error) {
+                    console.error(error);
+                }
+            });
+        });
+
+        //сохранение родительского элемента в бд
+        $('#button_add').click(function () {
+            var data = { imageText: $('#image_text').html(), treeId: $('#tree_id').val() };
+            $.ajax({
+                method: 'POST',
+                url: '@Url.Action("CreateParentElement")' + '/' + $('#tree_id').val(),
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    $('#form_add').fadeOut('slow');
+                    setImageClickable();
+                    console.log(response);
+                    currentId = response;
+                },
+                error: function (error) {
+                    console.error(error);
+                    alert('Ошибка при попытке добавить элемент');
+                }
+            });
+        });
+
+        //переходим к редактированию привязанной картинки
+        $('#button_next').click(function () {
+
+            $.ajax({
+                method: 'GET',
+                url: '@Url.Action("GetImageText")/' + $pressedElement.attr('data-child-id'),
+                success: function (response) {
+                    $('#image_text').empty();
+                    $('#image_text').append(response);
+
+                    historyRoute.push(currentId);
+                    $('#button_prev').removeAttr('disabled', 'disabled');
+                    $('#button_next').attr('disabled', 'disabled');
+                    $('#button_bind').attr('disabled', 'disabled');
+                    $('#button_unbind').attr('disabled', 'disabled');
+
+
+                    currentId = $pressedElement.attr('data-child-id');
+                    $pressedElement = null;
+                    setImageClickable();
+                    removeClickedAttrubite();
+                },
+                error: function (error) {
+                    console.error(error);
+                }
+            });
+
+        });
+
+        $('#button_prev').click(function () {
+            var imageId = historyRoute[historyRoute.length - 1];
+            $.ajax({
+                method: 'GET',
+                url: '@Url.Action("GetImageText")/' + imageId,
+                success: function (response) {
+                    $('#image_text').empty();
+                    $('#image_text').append(response);
+                    $('#button_bind').attr('disabled', 'disabled');
+                    $('#button_unbind').attr('disabled', 'disabled');
+
+                    historyRoute.pop();
+                    currentId = imageId;
+                    $pressedElement = null;
+                    setImageClickable();
+                    removeClickedAttrubite();
+                    $('#button_next').attr('disabled', 'disabled');
+                    if (historyRoute.length == 0) {
+                        $('#button_prev').attr('disabled', 'disabled');
+                    }
+                },
+                error: function (error) {
+                    console.error(error);
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            if ($('#parent_id').val())
+                getImageText();
+            else {
+                setImageClickable();
+            }
+            removeClickedAttrubite();
+        });
+
+        function onElementClick() {
+
+            if ($(this).attr('clicked'))
+                return;
+
+            //проверяем привязано ли к элементу изображение
+            //и в зависимости от этого (де)активируем кнопки
+            if ($(this).attr('data-child-id')) {
+                $('#button_unbind').removeAttr('disabled');
+                $('#button_bind').attr('disabled', 'disabled');
+                $('#button_next').removeAttr('disabled');
+            }
+            else {
+                $('#button_unbind').attr('disabled', 'disabled');
+                $('#button_bind').removeAttr('disabled');
+                $('#button_next').attr('disabled', 'disabled');
+            }
+
+            //убираем анимацию элемента
+            $(this).unbind('mouseenter mouseleave');
+            $(this).attr('clicked', true);
+
+            //включаем анимацию выбранного ранее элемента
+            if ($pressedElement) {
+                $pressedElement.css('opacity', 1);
+                $pressedElement.removeAttr('clicked');
+                $pressedElement.bind('mouseenter', setOpacityHalf);
+                $pressedElement.bind('mouseleave', setOpacityFull);
+            }
+
+            //запоминаем нажатый элемент
+            $pressedElement = $(this);
+            $pressedElement.css('opacity', 0.5);
+
+        };
+
+        function setOpacityHalf() {
+            $(this).css('opacity', 0.5);
+        };
+
+        function setOpacityFull() {
+            $(this).css('opacity', 1);
+        };
+
+        function setImageClickable() {
+            $('path, circle, ellipse, line, polygon, polyline, rect').hover(setOpacityHalf, setOpacityFull);
+            $('path, circle, ellipse, line, polygon, polyline, rect').click(onElementClick);
+        }
+
+        function removeClickedAttrubite() {
+            $('path, circle, ellipse, line, polygon, polyline, rect').each(function (i, element) {
+                $(element).removeAttr('clicked');
+            });
+        }
+
+        function setLoadingForButton($element) {
+            elementName = $element.text();
+            $element.text('');
+            $element.append('<span class="glyphicon glyphicon-refresh"></span>');
+        }
+
+        function setSuccessForButton($element) {
+            $element.empty();
+            $element.append('<span class="glyphicon glyphicon-ok"></span>');
+            setTimeout(function () {
+                $element.empty();
+                $element.text(elementName);
+                elementName = '';
+            }, 2000);
+            
+        }
+
+    </script>
+
+}
+

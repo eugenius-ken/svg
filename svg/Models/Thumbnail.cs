@@ -10,9 +10,6 @@ namespace svg.Models
     public class Thumbnail
     {
         public Guid Id { get; set; }
-
         public byte[] Content { get; set; }
-
-        public virtual SvgObject SvgObject { get; set; }
     }
 }

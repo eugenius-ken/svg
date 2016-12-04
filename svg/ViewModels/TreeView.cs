@@ -7,9 +7,7 @@ namespace svgProject.ViewModels
 {
     public class TreeView
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
-        public string XmlText { get; set; }
-        public Guid ThumbnailId { get; set; }
+        public Guid MainObjectId { get; set; }
     }
 }
