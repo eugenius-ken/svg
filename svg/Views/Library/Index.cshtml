@@ -7,7 +7,12 @@
 {
     <div class="row margin-top-25">
         <div class="col-md-11">
-            <input type="text" class="form-control" />
+            <div class="input-group">
+                <input type="text" name="q" id="q" value="@Model.Keyword" class="form-control" />
+                <span class="input-group-btn">
+                    <a href="@Url.Action("Index", "Library")" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span></a>
+                </span>
+            </div>
         </div>
         <div class="col-md-1">
             <button class="btn btn-primary btn-block">Search</button>

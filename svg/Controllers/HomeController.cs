@@ -10,7 +10,7 @@ namespace svg.Controllers
     {
         public ActionResult Index()
         {
-            return RedirectToAction("Index", "Library");
+            return RedirectToAction("Index", "Trees");
         }
 
         public ActionResult About()

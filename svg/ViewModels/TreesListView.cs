@@ -8,5 +8,6 @@ namespace svgProject.ViewModels
     public class TreesListView
     {
         public IEnumerable<TreeThumbnailView> Trees { get; set; }
+        public string Keyword { get; set; }
     }
 }

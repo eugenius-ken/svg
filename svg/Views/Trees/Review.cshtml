@@ -1,0 +1,90 @@
+﻿@model svgProject.ViewModels.ReviewTreeView
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <title>@Model.Name</title>
+</head>
+<body style="padding-top:10px;">
+    <input type="hidden" value="@Model.ParentId" id="parent_id" />
+    <div class="col-md-12">
+        <button class="btn btn-default" id="button_prev" disabled><span class="glyphicon glyphicon-chevron-left"></span></button>
+    </div>
+    <div id="image_text">
+        @Html.Raw(Model.ImageText)
+    </div>
+
+
+    
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+
+    <script>
+
+        var historyRoute = [];
+        var currentId = '';
+
+        $(document).ready(function () {
+            changeCursorForClickable();
+            currentId = $('#parent_id').val();
+        });
+
+        $('#button_prev').click(function () {
+            getImageText(historyRoute.pop());
+            if (historyRoute.length == 0) {
+                $('#button_prev').attr('disabled', 'disabled');
+            }
+        });
+
+        function changeCursorForClickable() {
+            $('path, circle, ellipse, line, polygon, polyline, rect').each(function (i, elem) {
+                if ($(elem).attr('data-child-id')) {
+                    $(elem).hover(setCursorPointer, setCursorDefault);
+                    $(elem).click(function () {
+                        var id = $(this).attr('data-child-id');
+                        
+                        if (id) {
+                            getImageText(id);
+                            historyRoute.push(currentId);
+                            $('#button_prev').removeAttr('disabled');
+                        }
+                    });
+                }
+            });
+        }
+
+        function getImageText(id) {
+            $.ajax({
+                method: 'GET',
+                url: '@Url.Action("GetXMLTextForElement")' + '/' + id,
+                success: function (response) {
+                    $('#image_text').empty();
+                    $('#image_text').append(response.imageText);
+                    currentId = response.id;
+                    changeCursorForClickable();
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert('Ошибка при попытке получить изображение');
+                }
+            });
+        }
+
+        function setCursorPointer() {
+            $(this).css('cursor', 'pointer');
+        }
+
+        function setCursorDefault() {
+            $(this).css('cursor', 'default');
+        }
+
+    </script>
+
+</body>
+</html>

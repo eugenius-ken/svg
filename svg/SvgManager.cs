@@ -17,9 +17,13 @@ namespace svg
         }
 
         #region SvgObjects
-        public IEnumerable<SvgObject> GetSvgObjects()
+        public IEnumerable<SvgObject> GetSvgObjects(string q)
         {
-            return _db.SvgObjects.AsEnumerable();
+            var objs = _db.SvgObjects.AsQueryable();
+            if (!String.IsNullOrEmpty(q))
+                objs = objs.Where(_ => _.Name.Contains(q));
+
+            return objs.AsEnumerable();
         }
 
         public void AddSvgObject(SvgObject obj)
@@ -67,9 +71,13 @@ namespace svg
 
         #region Trees
 
-        public IEnumerable<Tree> GetTrees()
+        public IEnumerable<Tree> GetTrees(string q)
         {
-            return _db.Trees.AsEnumerable();
+            var trees = _db.Trees.AsQueryable();
+            if (!String.IsNullOrEmpty(q))
+                trees = trees.Where(_ => _.Name.Contains(q));
+
+            return trees.AsEnumerable();
         }
 
         public Tree GetTreeById(Guid id)

@@ -22,20 +22,22 @@ namespace svg.Controllers
         private SvgManager _manager = new SvgManager();
         private JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-        public ActionResult Index()
+        public ActionResult Index(string q)
         {
-            var trees = _manager.GetTrees();
+            var trees = _manager.GetTrees(q);
             var model = new TreesListView()
             {
                 Trees = trees.Select(t => new TreeThumbnailView()
                 {
                     Id = t.Id,
                     Name = t.Name,
-                })
+                }),
+                Keyword = q
             };
             return View(model);
         }
 
+        [Authorize(Roles = "Administrator, User")]
         public ActionResult Add()
         {
             return View();
@@ -43,9 +45,10 @@ namespace svg.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator, User")]
         public ActionResult Add(TreeView model)
         {
-            
+
 
             if (ModelState.IsValid)
             {
@@ -62,12 +65,26 @@ namespace svg.Controllers
             return View(model);
         }
 
+        public ActionResult Review(Guid id)
+        {
+            var parent = _manager.GetParentElement(id);
+
+            return View(new ReviewTreeView()
+            {
+                TreeId = parent.TreeId,
+                ImageText = parent.Value,
+                Name = parent.Tree.Name,
+                ParentId = parent.Id
+            });
+        }
+
         //need for method GetThumbnailImage
         private bool ThumbnailCallBack()
         {
             return false;
         }
 
+        [Authorize(Roles = "Administrator, User")]
         public ActionResult Edit(Guid id)
         {
             var tree = _manager.GetTreeById(id);
@@ -77,9 +94,10 @@ namespace svg.Controllers
             {
                 Id = tree.Id,
                 Name = tree.Name,
+                
                 Value = mainElement == null ? String.Empty : mainElement.Value,
                 CurrentId = mainElement == null ? String.Empty : mainElement.Id.ToString(),
-                SvgObjects = _manager.GetSvgObjects().Select(o => new SvgObjectView()
+                SvgObjects = _manager.GetSvgObjects(String.Empty).Select(o => new SvgObjectView()
                 {
                     Id = o.Id,
                     Name = o.Name
@@ -89,6 +107,7 @@ namespace svg.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administrator, User")]
         public ActionResult Delete(Guid id)
         {
             var deleted = _manager.DeleteTree(id);
@@ -103,7 +122,7 @@ namespace svg.Controllers
 
             return File(thumbnail.Content, "image/jpg");
         }
-        
+
         public ActionResult GetXMLTextForImage(Guid id)
         {
             var image = _manager.GetSvgObjectById(id);
@@ -111,11 +130,16 @@ namespace svg.Controllers
             return image == null ? Content(String.Empty) : Content(image.Value);
         }
 
+        public ActionResult GetXmlTextForElement(Guid id)
+        {
+            var element = _manager.GetTreeElementById(id);
+
+            return Json(new { id = element.Id, imageText = element.Value}, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpPost]
         public ActionResult CreateParentElement(AjaxData obj)
         {
-            //AjaxData obj = (AjaxData)serializer.DeserializeObject(data);
-
             TreeElement parentElement = new TreeElement()
             {
                 Id = Guid.NewGuid(),
@@ -124,6 +148,26 @@ namespace svg.Controllers
                 Value = obj.imageText
             };
             _manager.AddTreeElement(parentElement);
+
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(obj.imageText);
+
+            var svgDocument = SvgDocument.Open(xmlDoc);
+            var bitmap = svgDocument.Draw();
+
+            Image.GetThumbnailImageAbort im = new Image.GetThumbnailImageAbort(ThumbnailCallBack);
+            var thumb = bitmap.GetThumbnailImage(250, 200, im, IntPtr.Zero);
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                thumb.Save(stream, ImageFormat.Jpeg);
+                var thumbnail = new Thumbnail()
+                {
+                    Id = obj.treeId,
+                    Content = stream.ToArray()
+                };
+                _manager.AddThumbnail(thumbnail);
+            }
 
             return Content(parentElement.Id.ToString());
         }
@@ -159,7 +203,7 @@ namespace svg.Controllers
             return Content(element.Value);
         }
 
-        
+
         public ActionResult UnbindImage(Guid imageId)
         {
             _manager.DeleteTreeElement(imageId);
@@ -168,7 +212,7 @@ namespace svg.Controllers
 
         //public ActionResult SaveThumbnailForTree(Guid id)
         //{
-            
+
         //}
 
         protected override void Dispose(bool disposing)

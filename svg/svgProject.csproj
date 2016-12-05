@@ -193,6 +193,7 @@
     <Compile Include="ViewModels\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\ReviewTreeView.cs" />
     <Compile Include="ViewModels\SvgObjectFullView.cs" />
     <Compile Include="ViewModels\SvgObjectsListView.cs" />
     <Compile Include="ViewModels\SvgObjectView.cs" />
@@ -325,6 +326,7 @@
     <Content Include="Views\Trees\_TreeThumbnail.cshtml" />
     <Content Include="Views\Trees\Add.cshtml" />
     <Content Include="Views\Trees\Edit.cshtml" />
+    <Content Include="Views\Trees\Review.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
