@@ -30,3 +30,8 @@ textarea {
 .low-opacity {
     opacity: 0.5;
 }
+
+svg {
+    float:left;
+    display: block;
+}

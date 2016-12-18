@@ -10,25 +10,44 @@ namespace svg
     public class SvgManager : IDisposable
     {
         private SvgDbContext _db;
-
+        private const int itemsPerPage = 10;
         public SvgManager()
         {
             _db = new SvgDbContext();
         }
 
         #region SvgObjects
-        public IEnumerable<SvgObject> GetSvgObjects(string q)
+        public IEnumerable<SvgObject> GetSvgObjects(string q, int page = 0)
         {
-            var objs = _db.SvgObjects.AsQueryable();
+            var objs = _db.SvgObjects.OrderByDescending(o => o.Created).AsQueryable();
+            if (!String.IsNullOrEmpty(q))
+                objs = objs.Where(_ => _.Name.Contains(q));
+            if(page != 0)
+                objs = objs.Skip(itemsPerPage * (page - 1)).Take(itemsPerPage);
+
+            return objs.AsEnumerable();
+        }
+
+        public int GetObjectsCount(string q)
+        {
+            var objs = _db.SvgObjects.OrderByDescending(o => o.Created).AsQueryable();
             if (!String.IsNullOrEmpty(q))
                 objs = objs.Where(_ => _.Name.Contains(q));
 
-            return objs.AsEnumerable();
+            int count = objs.Count();
+
+            return count / itemsPerPage == 1 || (count / itemsPerPage) % itemsPerPage == 0 ? count / itemsPerPage : count / itemsPerPage + 1;
         }
 
         public void AddSvgObject(SvgObject obj)
         {
             _db.SvgObjects.Add(obj);
+            _db.SaveChanges();
+        }
+
+        public void AddSvgObjects(IEnumerable<SvgObject> objs)
+        {
+            _db.SvgObjects.AddRange(objs);
             _db.SaveChanges();
         }
 
@@ -50,6 +69,11 @@ namespace svg
             {
                 return false;
             }
+        }
+
+        public bool SvgObjectExist(string svgText)
+        {
+            return _db.SvgObjects.Any(o => o.Value == svgText);
         }
 
         #endregion

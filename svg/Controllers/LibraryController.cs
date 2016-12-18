@@ -15,22 +15,25 @@ using System.Text;
 
 namespace svg.Controllers
 {
-    [Authorize(Roles = "Admin, User")]
+    [Authorize(Roles = "Administrator, User")]
     public class LibraryController : Controller
     {
         private SvgManager _manager = new SvgManager();
 
-        public ActionResult Index(string q)
+        public ActionResult Index(string q, int page = 1)
         {
-            var objects = _manager.GetSvgObjects(q);
+            var objects = _manager.GetSvgObjects(q, page);
             var model = new SvgObjectsListView()
             {
                 Objects = objects.Select(o => new SvgObjectView()
                 {
                     Id = o.Id,
-                    Name = o.Name
+                    Name = o.Name,
+                    Value = o.Value
                 }),
-                Keyword = q
+                Keyword = q,
+                CurrentPage = page,
+                PagesCount = _manager.GetObjectsCount(q)
             };
 
             return View(model);

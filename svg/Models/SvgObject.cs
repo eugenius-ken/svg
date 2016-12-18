@@ -14,5 +14,7 @@ namespace svg.Models
         public string Name { get; set; }
 
         public string Value { get; set; }
+
+        public DateTime Created { get; set; } = DateTime.Now;
     }
 }

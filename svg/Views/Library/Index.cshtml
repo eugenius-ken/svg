@@ -5,6 +5,7 @@
 
 @using (Html.BeginForm("Index", "Library", FormMethod.Get))
 {
+    
     <div class="row margin-top-25">
         <div class="col-md-11">
             <div class="input-group">
@@ -37,15 +38,27 @@
     }
 </div>
 
+<input type="hidden" id="pages_count" value="@Model.PagesCount" />
+<input type="hidden" id="current_page" value="@Model.CurrentPage" />
+<input type="hidden" id="q" value="@Model.Keyword" />
+
+<div style="text-align:center;">
+    <ul class="pagination" id="pagination"></ul>
+</div>
+
+
 @section unobtrusive
 {
     @Scripts.Render("~/bundles/unobtrusive")
 }
 
+
+
 @section Scripts
 {
+    <script src="~/Scripts/jquery.simplePagination.js"></script>
     <script>
-        
+
         function onDeleteCompleted(response) {
             if (response.responseText == '')
                 alert('Delete error');
@@ -53,6 +66,20 @@
                 $('#' + response.responseText).fadeOut('slow');
             }
         }
+
+        $('#pagination').pagination({
+            cssStyle: 'pagination',
+            pages: $('#pages_count').val(),
+            currentPage: $('#current_page').val(),
+            prevText: '<span aria-hidden="true">&laquo;</span>',
+            nextText: '<span aria-hidden="true">&raquo;</span>',
+            onPageClick: function (page) {
+                if ($('#q').val() == '')
+                    window.location = '@Url.Action("Index")?page=' + page;
+                else
+                    window.location = '@Url.Action("Index", new { q = Model.Keyword })&page=' + page;
+            }
+        });
 
     </script>
 }

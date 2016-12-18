@@ -1,0 +1,131 @@
+﻿@{
+    ViewBag.Title = "Parser";
+}
+<div class="col-md-12" style="margin: 50px 0px;">
+    <form class="col-md-7 form-horizontal">
+        <div class="alert alert-warning alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            Go to site <a href="https://openclipart.org" target="_blank">openclipart.org</a> and choose a section of site for parsing.
+            For example, it would be "most-popular" or "most-popular-weekly". Enter name of section to form below and click "Parse".
+            Parser will parse all pages of selected section. If you want to parse certain pages of section you can set start page and finish page. 
+            Also parser will skip same images.
+        </div>
+        <div class="form-group">
+            <label for="site-section" class="col-md-5 control-label">Enter a section of site for parse</label>
+            <div class="input-group col-md-7">
+                <span class="input-group-addon" id="domain">https://openclipart.org/</span>
+                <input type="text" placeholder="most-popular-weekly" class="form-control" id="site-section" aria-describedby="domain">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="page_start" class="col-md-5 control-label">Start page</label>
+            <div class="col-md-2" style="padding-left: 0px;">
+                <input type="number" class="form-control" id="page_start">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="page_finish" class="col-md-5 control-label">Finish page</label>
+            <div class="col-md-2" style="padding-left: 0px;">
+                <input type="number" class="form-control" id="page_finish">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="pull-right">
+                <span id="progress-info" style="margin-right:10px; font-weight:bold; display: none;">Analyzing...</span>
+                <button class="btn btn-default pull-right" id="parse-start">Parse</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <div id="progress" class="progress" style="display: none;">
+                <div class="progress-bar progress-bar-striped active" id="progress_bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width: 0%">
+                    <span class="sr-only">0% Complete</span>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts
+{
+    <script src="~/Scripts/jquery.signalR-2.2.1.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+
+    <script>
+
+        $('#parse-start').click(function () {
+            var pageStart = $('#page_start').val();
+            if (!pageStart)
+                pageStart = 0;
+            var pageFinish = $('#page_finish').val();
+            if (!pageFinish)
+                pageFinish = 0;
+
+            var href = $('#site-section').val();
+            if (href == '') {
+                alert('Enter a section of site');
+                return;
+            }
+            var $btn = $(this);
+            $btn.attr('disabled', 'disabled');
+            $btn.text('');
+            $btn.append('<span class="glyphicon glyphicon-refresh"></span>');
+            $('#progress-info').show();
+            $('#progress-info').css('color', 'red');
+
+            $.ajax({
+                method: 'GET',
+                timeout: 3600000,
+                url: '@Url.Action("StartParse")?href=' + href + '&pageStart=' + pageStart + '&pageFinish=' + pageFinish,
+                success: function (response) {
+                    $btn.text('Parse');
+                    $btn.removeAttr('disabled');
+                    $('#progress-info').text(response + ' images was added to database');
+                    $('#progress-info').css('color', 'green');
+                },
+                error: function (response) {
+                    alert('Error when parsing. Try again later');
+                }
+            });
+        });
+
+        var notification = $.connection.notificationHub;
+        var totalCountImages = 0;
+        notification.client.sendPageCount = function (pageCount) {
+            $('#progress-info').text('Analyzing... ' + pageCount + ' pages were viewed');
+        }
+
+        notification.client.sendCountImages = function (count) {
+            totalCountImages = count;
+            $('#progress-info').text('It will be parsed ' + count + ' images. Getting links to download');
+
+            $('#progress_bar').attr('aria-valuemax', 'count');
+            $('#progress').show();
+        }
+
+        notification.client.sendUrlCount = function (count) {
+            console.log(count / totalCountImages * 100);
+            $('#progress_bar').attr('aria-valuenow', count);
+            $('#progress_bar').css('width', (count / totalCountImages * 100) + '%');
+        }
+
+        notification.client.sendDownloadImageStarted = function () {
+            $('#progress-info').text('It will be parsed ' + totalCountImages + ' images. Downloading images');
+            $('#progress_bar').attr('aria-valuenow', '0');
+            $('#progress_bar').css('width','0%');
+        }
+
+        notification.client.sendCurrent = function (current) {
+            $('#progress_bar').attr('aria-valuenow', current);
+            $('#progress_bar').css('width', current / totalCountImages * 100 + '%');
+        }
+
+        notification.client.parseCompleted = function () {
+            $('#progress').hide();
+            $('#progress-info').text('Parse completed. Adding images to database...');
+        }
+
+        $.connection.hub.start();
+
+    </script>
+
+}

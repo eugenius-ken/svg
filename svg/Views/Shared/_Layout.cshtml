@@ -24,6 +24,7 @@
                     @if (User.IsInRole("Administrator") || User.IsInRole("User"))
                     {
                         <li>@Html.ActionLink("Library", "Index", "Library")</li>
+                        <li>@Html.ActionLink("Parser", "Index", "Parser")</li>
                     }
                     @*<li>@Html.ActionLink("About", "About", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@

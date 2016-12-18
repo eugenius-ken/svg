@@ -1,7 +1,8 @@
 ﻿@model svg.ViewModels.SvgObjectView
 
 <div class="thumbnail">
-    <img src="@Url.Action("Thumbnail", new { id = Model.Id })" alt="thumbnail" />
+    @*<img src="@Url.Action("Thumbnail", new { id = Model.Id })" alt="thumbnail" />*@
+    <div style="width: 100px; height:100px;">@Html.Raw(Model.Value)</div>
     <div class="caption" style="word-break:break-word">
         <h3 style="text-align:center;">@Model.Name</h3>
         <p style="text-align:center;">
